@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from requests import Request, post
 from rest_framework import status
 from rest_framework.response import Response
-from .util import update_or_create_user_tokens
+from .util import update_or_create_user_tokens, is_spotify_authenticated
 
 # Create your views here.
 
@@ -46,3 +46,8 @@ def spotify_callback(request, format=None):
     update_or_create_user_tokens(request.session.session_key, access_token, token_type, expires_in, refresh_token)
 
     return redirect('frontend:')
+
+class IsAuthenticated(APIView):
+    def get(self, request, format=None):
+        is_authenticated = is_spotify_authenticated(self.request.session.session_key)
+        return Response({'status': is_authenticated}, status=status.HTTP_200_OK)
